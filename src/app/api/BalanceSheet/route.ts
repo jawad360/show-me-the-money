@@ -1,39 +1,21 @@
 import { BalanceSheetResponseType } from "@/app/types";
-import { produce } from "immer";
+import { getBalanceSheetReports, getBalanceSheetReportWithType } from "./helper";
+import { NextResponse, NextRequest } from "next/server";
 
-export const getBalanceSheetReports = (data: BalanceSheetResponseType) => {
-  if (data?.Reports?.[0]) {
-    return data?.Reports?.[0];
-  }
-  return { message: "Not found" };
-};
 
-export const getBalanceSheetReportWithType = (balanceSheetReport: Report) => {
-  return produce(balanceSheetReport, (draft) => {
-    let currentType = '';
-    draft.Rows.forEach((row) => {
-      if (row.RowType === "Section") {
-        if(row.Title === "Assets" || row.Title === "Liabilities" || row.Title === "Equity") {
-          currentType = row.Title;
-        }
-        row.Type = currentType;
-      }
-    });
-  });
-};
-
-export async function GET(request: Request) {
+export async function GET(request: NextRequest) {
+  const params = request.nextUrl.searchParams.toString()
   const res = await fetch(
-    "http://localhost:8080/api.xro/2.0/Reports/BalanceSheet"
+    `${process.env.XERO_API}/api.xro/2.0/Reports/BalanceSheet?${params}`
   );
   const data: BalanceSheetResponseType = await res.json();
 
   const balanceSheetReport = getBalanceSheetReports(data);
 
-  if (balanceSheetReport && !balanceSheetReport.hasOwnProperty("message")) {
+  if (balanceSheetReport && !("message" in balanceSheetReport)) {
     const balanceSheetReportWithType =
       getBalanceSheetReportWithType(balanceSheetReport);
-    return Response.json(balanceSheetReportWithType);
+    return NextResponse.json(balanceSheetReportWithType);
   }
-  return Response.json(balanceSheetReport);
+  return NextResponse.json(balanceSheetReport);
 }

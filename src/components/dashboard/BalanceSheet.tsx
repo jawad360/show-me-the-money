@@ -19,14 +19,14 @@ import { DatePicker } from "@mui/x-date-pickers";
 import { BalanceSheetResponseType, Row } from "@/app/types";
 import dayjs, { Dayjs } from "dayjs";
 
-const RowRenderer: React.FC<{
+export const RowRenderer: React.FC<{
   row: Row;
 }> = ({ row }) => {
   if (row.RowType === "Header") {
     return (
       <TableRow>
         {row.Cells?.map((cell, index) => (
-          <TableCell key={cell.Value} align={index === 0 ? "inherit" : "right"}>
+          <TableCell key={index} align={index === 0 ? "inherit" : "right"}>
             {cell.Value}
           </TableCell>
         ))}
@@ -36,7 +36,7 @@ const RowRenderer: React.FC<{
     return (
       <TableRow>
         {row.Cells?.map((cell, index) => (
-          <TableCell key={cell.Value} align={index === 0 ? "inherit" : "right"}>
+          <TableCell key={index} align={index === 0 ? "inherit" : "right"}>
             {cell.Value}
           </TableCell>
         ))}
@@ -47,7 +47,7 @@ const RowRenderer: React.FC<{
       <TableRow sx={{ backgroundColor: "#f0f0f0", fontWeight: "bold" }}>
         {row.Cells?.map((cell, index) => (
           <TableCell
-            key={cell.Value}
+            key={index}
             sx={{ fontWeight: "bold" }}
             align={index === 0 ? "inherit" : "right"}
           >
@@ -61,13 +61,13 @@ const RowRenderer: React.FC<{
   }
 };
 
-const SectionGroup: React.FC<{
+export const SectionGroup: React.FC<{
   section: Row;
 }> = ({ section }) => {
   const [isExpanded, setIsExpanded] = useState(false);
 
   const sectionSummaryRow = useMemo(
-    () => section.Rows.find((row) => row.RowType === "SummaryRow"),
+    () => section.Rows?.find((row) => row.RowType === "SummaryRow"),
     [section.Rows]
   );
 
@@ -99,20 +99,23 @@ const SectionGroup: React.FC<{
           </Box>
         </TableCell>
         {sectionSummaryRow &&
-          sectionSummaryRow.Cells.slice(1).map((cell) => (
-            <TableCell key={cell.Value} align="right">
+          sectionSummaryRow.Cells.slice(1).map((cell, index) => (
+            <TableCell key={index} align="right">
               {cell.Value}
             </TableCell>
           ))}
       </TableRow>
-      {isExpanded && section.Rows.map((row) => <RowRenderer row={row} />)}
+      {isExpanded &&
+        section.Rows?.map((row, index) => (
+          <RowRenderer key={index} row={row} />
+        ))}
     </>
   );
 };
 
-const MainBalanceSheetSections: React.FC<{
-  sections: Row[];
-}> = ({ sections }) => {
+export const MainBalanceSheetSections: React.FC<{ sections: Row[] }> = ({
+  sections,
+}) => {
   return (
     <>
       <TableRow sx={{ backgroundColor: "#c0c0c0" }}>
@@ -122,10 +125,15 @@ const MainBalanceSheetSections: React.FC<{
           </Typography>
         </TableCell>
       </TableRow>
+      {/* not a good idea to use key as index */}
       {sections.length > 1 &&
-        sections.map((section) => <SectionGroup section={section} />)}
+        sections.map((section, index) => (
+          <SectionGroup key={index} section={section} />
+        ))}
       {sections.length === 1 &&
-        sections[0].Rows.map((row) => <RowRenderer row={row} />)}
+        sections[0].Rows?.map((row, index) => (
+          <RowRenderer key={index} row={row} />
+        ))}
     </>
   );
 };

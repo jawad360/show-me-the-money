@@ -12,18 +12,23 @@ const Dashboard = () => {
 
   useEffect(() => {
     (async () => {
-      setIsLoading(true);
-      const searchParams = new URLSearchParams('');
+      try{
 
-      if(date){
-        searchParams.set('date', date.format('YYYY-MM-DD'))
+        setIsLoading(true);
+        const searchParams = new URLSearchParams('');
+  
+        if(date){
+          searchParams.set('date', date.format('YYYY-MM-DD'))
+        }
+        const res = await fetch(`http://localhost:3000/api/BalanceSheet?${searchParams.toString()}`, {
+          cache: "no-store",
+        });
+        const data = await res.json();
+        setIsLoading(false);
+        setData(data);
+      }catch(err){
+        setIsLoading(false);
       }
-      const res = await fetch(`http://localhost:3000/api/BalanceSheet?${searchParams.toString()}`, {
-        cache: "no-store",
-      });
-      const data = await res.json();
-      setIsLoading(false);
-      setData(data);
     })();
   }, [date]);
 

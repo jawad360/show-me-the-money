@@ -1,0 +1,14 @@
+version: '3'
+services:
+  xero:
+    image: jaypeng2015/show-me-the-money
+    ports:
+      - "8080:3000"
+  webapp:
+    image: jawad360/show-me-the-money
+    ports:
+      - "3000:3000"
+    environment:
+      XERO_API: http://xero:8080 
+    depends_on:
+      - xero
