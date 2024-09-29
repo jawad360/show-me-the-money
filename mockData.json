@@ -36,6 +36,7 @@
         {
           "RowType": "Section",
           "Title": "Bank",
+          "type": "Assets",
           "Rows": [
             {
               "RowType": "Row",
@@ -152,6 +153,7 @@
         {
           "RowType": "Section",
           "Title": "Current Assets",
+          "type": "Assets",
           "Rows": [
             {
               "RowType": "Row",
@@ -396,6 +398,7 @@
         {
           "RowType": "Section",
           "Title": "Fixed Assets",
+          "type": "Assets",
           "Rows": [
             {
               "RowType": "Row",
@@ -480,6 +483,7 @@
         {
           "RowType": "Section",
           "Title": "Non-current Assets",
+          "type": "Assets",
           "Rows": [
             {
               "RowType": "Row",
@@ -596,6 +600,7 @@
         {
           "RowType": "Section",
           "Title": "",
+          "type": "Assets",
           "Rows": [
             {
               "RowType": "SummaryRow",
@@ -621,6 +626,7 @@
         {
           "RowType": "Section",
           "Title": "Current Liabilities",
+          "type": "Liabilities",
           "Rows": [
             {
               "RowType": "Row",
@@ -993,6 +999,7 @@
         {
           "RowType": "Section",
           "Title": "Non-Current Liabilities",
+          "type": "Liabilities",
           "Rows": [
             {
               "RowType": "Row",
@@ -1109,6 +1116,7 @@
         {
           "RowType": "Section",
           "Title": "",
+          "type": "Liabilities",
           "Rows": [
             {
               "RowType": "SummaryRow",
@@ -1129,6 +1137,7 @@
         {
           "RowType": "Section",
           "Title": "",
+          "type": "Liabilities",
           "Rows": [
             {
               "RowType": "Row",
@@ -1149,6 +1158,7 @@
         {
           "RowType": "Section",
           "Title": "Equity",
+          "type": "Equity",
           "Rows": [
             {
               "RowType": "Row",

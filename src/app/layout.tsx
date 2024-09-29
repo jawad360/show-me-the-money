@@ -2,6 +2,22 @@
 import { baselightTheme } from "@/utils/theme/DefaultColors";
 import { ThemeProvider } from "@mui/material/styles";
 import CssBaseline from "@mui/material/CssBaseline";
+import { Box, Container, styled } from "@mui/material";
+
+const MainWrapper = styled("div")(() => ({
+  display: "flex",
+  minHeight: "100vh",
+  width: "100%",
+}));
+
+const PageWrapper = styled("div")(() => ({
+  display: "flex",
+  flexGrow: 1,
+  paddingBottom: "60px",
+  flexDirection: "column",
+  zIndex: 1,
+  backgroundColor: "transparent",
+}));
 
 export default function RootLayout({
   children,
@@ -14,7 +30,18 @@ export default function RootLayout({
         <ThemeProvider theme={baselightTheme}>
           {/* CssBaseline kickstart an elegant, consistent, and simple baseline to build upon. */}
           <CssBaseline />
-          {children}
+          <MainWrapper className="mainwrapper">
+            <PageWrapper className="page-wrapper">
+              <Container
+                sx={{
+                  paddingTop: "20px",
+                  maxWidth: "1200px",
+                }}
+              >
+                <Box sx={{ minHeight: "calc(100vh - 170px)" }}>{children}</Box>
+              </Container>
+            </PageWrapper>
+          </MainWrapper>
         </ThemeProvider>
       </body>
     </html>
