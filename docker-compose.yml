@@ -9,6 +9,6 @@ services:
     ports:
       - "3000:3000"
     environment:
-      XERO_API: http://xero:8080 
+      XERO_API: http://xero:3000 
     depends_on:
       - xero
