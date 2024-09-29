@@ -17,6 +17,7 @@ import _ from "lodash";
 import DashboardCard from "../shared/DashboardCard";
 import { DatePicker } from "@mui/x-date-pickers";
 import { BalanceSheetResponseType, Row } from "@/app/types";
+import dayjs, { Dayjs } from "dayjs";
 
 const RowRenderer: React.FC<{
   row: Row;
@@ -24,34 +25,39 @@ const RowRenderer: React.FC<{
   if (row.RowType === "Header") {
     return (
       <TableRow>
-        <TableCell colSpan={1}></TableCell>
-        <TableCell align="right">{row.Cells[1].Value}</TableCell>
-        <TableCell align="right">{row.Cells[2].Value}</TableCell>
+        {row.Cells?.map((cell, index) => (
+          <TableCell key={cell.Value} align={index === 0 ? "inherit" : "right"}>
+            {cell.Value}
+          </TableCell>
+        ))}
       </TableRow>
     );
-  }
-  if (row.RowType === "Row") {
+  } else if (row.RowType === "Row") {
     return (
       <TableRow>
-        <TableCell colSpan={1}>{row.Cells[0].Value}</TableCell>
-        <TableCell align="right">{row.Cells[1].Value}</TableCell>
-        <TableCell align="right">{row.Cells[2].Value}</TableCell>
+        {row.Cells?.map((cell, index) => (
+          <TableCell key={cell.Value} align={index === 0 ? "inherit" : "right"}>
+            {cell.Value}
+          </TableCell>
+        ))}
       </TableRow>
     );
   } else if (row.RowType === "SummaryRow") {
     return (
       <TableRow sx={{ backgroundColor: "#f0f0f0", fontWeight: "bold" }}>
-        <TableCell colSpan={1} sx={{ fontWeight: "bold" }}>
-          {row.Cells[0].Value}
-        </TableCell>
-        <TableCell align="right" sx={{ fontWeight: "bold" }}>
-          {row.Cells[1].Value}
-        </TableCell>
-        <TableCell align="right" sx={{ fontWeight: "bold" }}>
-          {row.Cells[2].Value}
-        </TableCell>
+        {row.Cells?.map((cell, index) => (
+          <TableCell
+            key={cell.Value}
+            sx={{ fontWeight: "bold" }}
+            align={index === 0 ? "inherit" : "right"}
+          >
+            {cell.Value}
+          </TableCell>
+        ))}
       </TableRow>
     );
+  } else if (row.RowType === "Section") {
+    return <SectionGroup section={row} />;
   }
 };
 
@@ -92,16 +98,12 @@ const SectionGroup: React.FC<{
             </Typography>
           </Box>
         </TableCell>
-        {sectionSummaryRow && (
-          <>
-            <TableCell align="right">
-              {sectionSummaryRow.Cells[1].Value}
+        {sectionSummaryRow &&
+          sectionSummaryRow.Cells.slice(1).map((cell) => (
+            <TableCell key={cell.Value} align="right">
+              {cell.Value}
             </TableCell>
-            <TableCell align="right">
-              {sectionSummaryRow.Cells[2].Value}
-            </TableCell>
-          </>
-        )}
+          ))}
       </TableRow>
       {isExpanded && section.Rows.map((row) => <RowRenderer row={row} />)}
     </>
@@ -128,7 +130,11 @@ const MainBalanceSheetSections: React.FC<{
   );
 };
 
-const BalanceSheet: React.FC<{ data: BalanceSheetResponseType["Reports"][0] }> = ({ data }) => {
+const BalanceSheet: React.FC<{
+  date: Dayjs;
+  setDate: (date: Dayjs) => void;
+  data: BalanceSheetResponseType["Reports"][0];
+}> = ({ data, date, setDate }) => {
   const headerRow = useMemo(
     () => data.Rows.find((row) => row.RowType === "Header"),
     [data]
@@ -138,7 +144,15 @@ const BalanceSheet: React.FC<{ data: BalanceSheetResponseType["Reports"][0] }> =
     <DashboardCard
       title={data.ReportName}
       subtitle={data.ReportDate}
-      action={<DatePicker views={["month", "year"]} disableFuture />}
+      action={
+        <DatePicker
+          yearsOrder="desc"
+          views={["month", "year"]}
+          maxDate={dayjs().endOf("month")}
+          value={date}
+          onChange={(d) => d && setDate(d.endOf("month"))}
+        />
+      }
     >
       <TableContainer component={Paper}>
         <Table>
@@ -150,9 +164,7 @@ const BalanceSheet: React.FC<{ data: BalanceSheetResponseType["Reports"][0] }> =
           <TableBody>
             {Object.values(
               _.groupBy(
-                data.Rows.filter(
-                  (row) => row.RowType === "Section"
-                ),
+                data.Rows.filter((row) => row.RowType === "Section"),
                 "Type"
               )
             ).map((section) => (
